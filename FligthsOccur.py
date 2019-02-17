@@ -3,7 +3,7 @@
 
 # # Analyzing Aviation Occurrences in Brazil
 # 
-# In this session, we will use a Notebook running Python 3.5 with Apache Spark 2.1 for data analysis and visualizations using Apache SystemML and pandas DataFrames. We'll walk through some examples of Data Preparation, Data Analysis, Scoring, Classification, Data Normalization, Correlations, Feature scaling and normalization.
+# In this session, we will use a Notebook running Python 3.5 with Apache Spark 2.1 for data analysis using Apache SystemML, IBM Cloud Object Storage and pandas DataFrames. We will also use matplotlib for visualizations and walk through some examples of Data Preparation, Data Analysis, Scoring Data, Classification, Data Normalization, Correlations and Feature scaling.
 # 
 # We will analyze open data from Opendata AIG Brazil - Brazilian Civil Aviation Occurrences and to extract even more insights, we will explore two datasets and build charts for  visualization of specific areas and see how the data science can help predicting occurrences.
 # 
@@ -12,16 +12,16 @@
 
 # # Install prerequisites
 # 
-# To start, we will import some basic libraries including Machine Learning entirely and import some functions
+# To start, we will install SystemML and then import NumPy, the fundamental library for array computing with Python and also pandas for our dataframes. 
 
-# In[64]:
+# In[1]:
 
 
 #Install SystemML
 get_ipython().system(u'pip install --upgrade systemml')
 
 
-# In[65]:
+# In[2]:
 
 
 #Import NumPy and pandas
@@ -31,11 +31,11 @@ import pandas as pd
 
 # # This dataset
 # 
-# We'll use two datasets, one with all the details of aircrafts involved on every brazilian civil aviation occurrence and other with details of each occurrence in 10 years (2008-2017) of Brazilian Civil Aviation:
+# We'll use two datasets, one with all the details of aircrafts involved on every Brazilian civil aviation occurrence and other with details of each occurrence in 10 years (2008-2017) of Brazilian Civil Aviation:
 # 
 # * aircrafts.csv - All the aircrafts that were involved on every occurrence
 # 
-# * occurrences.csv - All occurences details from brazilian civil aviation
+# * occurrences.csv - All occurrences details from Brazilian civil aviation
 # 
 # 
 # These two datasets and more can be found at:
@@ -49,11 +49,11 @@ import pandas as pd
 
 # # Import the 'occurrences.csv' dataset into the Notebook
 # 
-# Before we load both files into your IBM Cloud Object Storage by dragging and dropping the files on the '1001' pannel, you need to create a connection in your Notebook to your IBM Cloud Object Storage. To do that, from your project page, click on the 'Add to Project' and then on 'Connection', choose your Cloudant Instance and then 'Create'.
+# Before we load both files into your IBM Cloud Object Storage by dragging and dropping the files on the '1001' panel, you need to create a connection in your Notebook to your IBM Cloud Object Storage. To do that, from your project page, click on the 'Add to Project' and then on 'Connection', choose your Cloudant Instance and then 'Create'.
 # 
 # And then we will connect the Notebook to the IBM Cloud Object Storage and load the "aircrafts.csv" dataset to start with our data analysis.
 
-# In[66]:
+# In[3]:
 
 
 # Connect your Object Storage by clicking 'Insert Credentials' from the drop-down of the "aircrafts.csv" dataset
@@ -61,8 +61,8 @@ import pandas as pd
 # The following code contains the credentials for a file in your IBM Cloud Object Storage.
 # You might want to remove those credentials before you share your notebook.
 credentials_1 = {
-    'IBM_API_KEY_ID': '********',
-    'IAM_SERVICE_ID': '********',
+    'IBM_API_KEY_ID': 'gIMZPDj31lO38pRQ0aegjrGR1kpkl6Q_aYM9LyJMzfjF',
+    'IAM_SERVICE_ID': 'iam-ServiceId-90ef20b7-b77f-4586-99fb-52cd2460ab74',
     'ENDPOINT': 'https://s3-api.us-geo.objectstorage.service.networklayer.com',
     'IBM_AUTH_ENDPOINT': 'https://iam.bluemix.net/oidc/token',
     'BUCKET': 'default-donotdelete-pr-nlfssruajbx9xv',
@@ -72,7 +72,7 @@ credentials_1 = {
 
 # Import ibm_boto3 library which provides complete access to the IBM Cloud Object Storage API and Insert pandas DataFrame to start exploring our first dataset
 
-# In[67]:
+# In[4]:
 
 
 # Import ibm_boto3 library
@@ -86,8 +86,8 @@ def __iter__(self): return 0
 # The following code accesses a file in your IBM Cloud Object Storage. It includes your credentials.
 # You might want to remove those credentials before you share your notebook.
 client_689c19f611b0478583c74d2a7431addc = ibm_boto3.client(service_name='s3',
-    ibm_api_key_id='******',
-    ibm_auth_endpoint="******",
+    ibm_api_key_id='gIMZPDj31lO38pRQ0aegjrGR1kpkl6Q_aYM9LyJMzfjF',
+    ibm_auth_endpoint="https://iam.bluemix.net/oidc/token",
     config=Config(signature_version='oauth'),
     endpoint_url='https://s3-api.us-geo.objectstorage.service.networklayer.com')
 
@@ -101,13 +101,61 @@ df_data_1 = pd.read_csv(body, na_values=['****', '***',''], header=0, encoding='
 df_data_1.head()
 
 
+# # Initial Data Exploration
+
+# Train the dataset.
+
+# In[5]:
+
+
+train = (df_data_1)
+
+
+# Getting the shape of Train dataset
+
+# In[6]:
+
+
+print("Train dataset's Shape:")
+print(train.shape)
+train.head()
+
+
+# Getting the column names:
+
+# In[7]:
+
+
+df_data_1.columns
+
+
+# In[8]:
+
+
+df_data_1.head()
+
+
+# Checking the descriptive statistics for each feature
+
+# In[9]:
+
+
+df_data_1.describe()
+
+
+# In[10]:
+
+
+train.info()
+
+
 # # Data Preparation
 # 
-# Now we will be the accessing, organizing, and structuring of unprocessed data assets to be used for data analysis.
+# Now we will be accessing, organizing, and structuring of unprocessed data assets to be used for data analysis.
 # 
 # Notice that some column names contain spaces, we will replace all spaces with underlines.
 
-# In[68]:
+# In[11]:
 
 
 # Replace 
@@ -115,11 +163,11 @@ df_data_1.columns = [c.replace(' ', '_') for c in df_data_1.columns]
 df_data_1.head()
 
 
-# # Initial Data Exploration with matplotlib
+# # Data Exploration with matplotlib
 # 
 # Import matplotlib, define your own style and plot the results for a better data visualization. 
 
-# In[69]:
+# In[12]:
 
 
 # Plotting with matplotlib
@@ -133,6 +181,7 @@ pyo.offline.init_notebook_mode()
 import warnings
 warnings.filterwarnings('ignore')
 pd.options.display.max_columns = 30
+get_ipython().magic(u'matplotlib inline')
 
 # Defining your own style
 plt.style.use('ggplot')
@@ -145,11 +194,9 @@ plt.rcParams['ytick.labelsize'] = 16
 plt.rcParams['legend.fontsize'] = 18
 
 
-# # Data Analysis
-# 
 # As an example, we will check the count of the aircrafts that had any sort of failure, grouping by model and engine_type, we will be able to plot the top 20 failed aircrafts.
 
-# In[70]:
+# In[13]:
 
 
 FlightsOccur_Sorted = pd.DataFrame(df_data_1.groupby(by=['model','engine_type'])['equipment'].count().reset_index())
@@ -172,16 +219,16 @@ fig = go.Figure(data=data, layout=layout)
 pyo.iplot(fig)
 
 
-# Clearly we can see that model 'AB-115' that uses PISTON engines was the top failed Aircraft, followed by models 'EMB-202', 'EMB-201A' and others as you can see above.
+# Clearly, we can see that model 'AB-115' that uses PISTON engines was the top failed Aircraft, followed by models 'EMB-202', 'EMB-201A' and others as you can see above.
 
-# # Scoring
+# # Scoring Data
 # 
 # In machine learning, also called Prediction, Scoring is the process of applying an algorithmic model built from a historical dataset to a new dataset in order to uncover practical insights that will help solving problems.
 # 
 # Taking as an example, the damage_level column by having the values UNKNOWN, NONE, LIGHT, SUBSTANTIAL and DESTROYED. We will score the values to nan, 0, 1, 2, 3 respectively.
 # 
 
-# In[71]:
+# In[14]:
 
 
 # Scoring
@@ -192,7 +239,7 @@ df_data_1.head()
 # We will also drop the rows where both 'damage_level' and 'engines_amount' columns have the NaN value, excluding a few rows of our data.
 # 
 
-# In[72]:
+# In[15]:
 
 
 # Drop all rows where 'damage_level' & 'engines_amount' columns have NaN value
@@ -202,7 +249,7 @@ df_data_1.head()
 
 # Let's explore a little more this Dataset and see the top 10 failed aircrafts based on the operation phases of the Occurrence to which Aircrafts and in which operation phase failed.
 
-# In[73]:
+# In[16]:
 
 
 FlightsOccur_Sorted = pd.DataFrame(df_data_1.groupby(by=['model','operation_phase'])['equipment'].count().reset_index())
@@ -234,7 +281,7 @@ pyo.iplot(fig)
 # We will import the "occurrences.csv" dataset into the Notebook and explore our second dataset.
 # 
 
-# In[74]:
+# In[17]:
 
 
 #Insert your pandas DataFrame by clicking 'Insert pandas DataFrame' from the drop-down of the "occurrences.csv" dataset
@@ -246,12 +293,60 @@ df_data_2 = pd.read_csv(body, na_values=['****', '***',''], header=0, encoding='
 df_data_2.head()
 
 
+# # Initial Data Exploration
+
+# Test dataset
+
+# In[18]:
+
+
+test = (df_data_2)
+
+
+# Getting the shape of Test dataset
+
+# In[19]:
+
+
+print("Test dataset's shape:")
+print(test.shape)
+test.head()
+
+
+# Getting the columns names
+
+# In[20]:
+
+
+df_data_2.columns
+
+
+# In[21]:
+
+
+df_data_2.head()
+
+
+# Checking the descriptive statistics for each feature
+
+# In[22]:
+
+
+df_data_2.describe()
+
+
+# In[23]:
+
+
+test.info()
+
+
 # # Data preparation
 # 
 # Notice that some column names contain spaces, we will also replace every space with an underline.
 # 
 
-# In[75]:
+# In[24]:
 
 
 # Replace
@@ -261,7 +356,7 @@ df_data_2.head()
 
 # As an example, we will create a new column called 'occurrence_year' and extract the year from 'occurrence_day' column, which is composed of Month, Day and Year. 
 
-# In[76]:
+# In[25]:
 
 
 # Create a new column called 'occurrence_year' based on the 'occurrence_day' column
@@ -269,12 +364,12 @@ df_data_2['occurrence_year'] = pd.to_datetime(df_data_2['occurrence_day'], forma
 df_data_2.head()
 
 
-# # Classification
+# # Data Analysis and Classification
 # 
 # Classification can be performed on structured or unstructured data. Classification is a technique where we categorize data into a given number of classes. The main goal of a classification problem is to identify the category/class to which a new data will fall under.
 # 
 
-# In[77]:
+# In[26]:
 
 
 # Classification
@@ -283,7 +378,7 @@ print(df_data_2['classification'].unique())
 
 # Now we will get the count of 'ACCIDENT' and 'SERIOUS INCIDENT' and also the total count
 
-# In[78]:
+# In[27]:
 
 
 # Count
@@ -294,7 +389,7 @@ print('ACCIDENT: ' + str(df_data_2['classification'][df_data_2['classification']
 
 # List all Occurrece Types
 
-# In[79]:
+# In[28]:
 
 
 # List all occurrence types
@@ -303,7 +398,7 @@ print(df_data_2['type_of_occurrence'].unique())
 
 # Also get the count of each occurrence type
 
-# In[80]:
+# In[29]:
 
 
 # Count of each occurrence type
@@ -313,7 +408,7 @@ for occ in df_data_2['type_of_occurrence'].unique():
 
 # Plot the results for a better view
 
-# In[81]:
+# In[30]:
 
 
 FlightOccur_Sorted = pd.DataFrame(df_data_2.groupby(by=['type_of_occurrence','classification'])['fu'].count().reset_index())
@@ -342,7 +437,7 @@ pyo.iplot(fig)
 # 
 # Data normalization means transforming all variables in the data to a specific range. We do data normalization when seeking for relations.
 
-# In[82]:
+# In[31]:
 
 
 # Data Normalization
@@ -353,9 +448,9 @@ occurrences_freq.head(10)
 
 
 # # Now let's see the count for each State
-# Notice the "EX" isn't a state and it relates to accurrences happened out side of Brazilian territory
+# Notice the "EX" isn't a state and it relates to occurrences happened outside of Brazilian territory
 
-# In[83]:
+# In[32]:
 
 
 for occ in df_data_2['fu'].unique():
@@ -366,7 +461,7 @@ for occ in df_data_2['fu'].unique():
 # 
 # Database normalization is the process of structuring a relational database in accordance with a series of so-called normal forms in order to reduce data redundancy and improve data integrity.
 
-# In[84]:
+# In[33]:
 
 
 states_freq_dict = {}
@@ -380,7 +475,7 @@ states_freq.head(30)
 # 
 # Now we will plot the rate results
 
-# In[85]:
+# In[34]:
 
 
 fig, axes = plt.subplots(figsize=(20.,6.))
@@ -399,7 +494,7 @@ plt.close()
 # 
 # The results will show the rate for each state, also look for the 'All' column to have a better idea of the evolution 
 
-# In[86]:
+# In[35]:
 
 
 freq_year_dict = { }
@@ -433,7 +528,7 @@ freq_year.head(10)
 # 
 # Let's investigate how they correlate to damage_level.
 
-# In[87]:
+# In[36]:
 
 
 column_list = ['damage_level', 'engines_amount', 'seatings_amount', 'takeoff_max_weight_(Lbs)', 'year_manufacture']
@@ -460,7 +555,7 @@ plt.close()
 # 
 # To really understand correlations, we need to compute the Pearson correlation coefficients and build a full correlation matrix.
 
-# In[88]:
+# In[37]:
 
 
 def plot_heatmap(df):
@@ -475,50 +570,14 @@ def plot_heatmap(df):
 plot_heatmap(df_data_1[column_list].corr(method='pearson'))
 
 
-# # Parallel coordinates plot
+# # Conclusion:  
 # 
-# "Parallel coordinates is a plotting technique for plotting multivariate data. It allows one to see clusters in data and to estimate other statistics visually. Using parallel coordinates points are represented as connected line segments. Each vertical line represents one attribute. One set of connected line segments represents one data point. Points that tend to cluster will appear closer together".
-
-# In[89]:
-
-
-# Feature scaling and normalization
-from pandas.plotting import parallel_coordinates
-def z_score_norm(df, feat):
-    
-    dff = df.copy(deep=True)
-    
-    dff[feat] = (df[feat] - df[feat].mean()) / (df[feat].max() - df[feat].min())
-    
-    return dff
-
-aircrafts_norm = z_score_norm(df_data_1[column_list], column_list[1:])
-
-fig, axes = plt.subplots(figsize=(10.,6.))
-
-parallel_coordinates(aircrafts_norm, 'damage_level')
-
-plt.show()
-plt.close()
-
-
-# #  Andrews plot
+# *  The newer the aircraft, the bigger it is, i.e. it has more engines and seatings.
 # 
-# "Andrews curves allow one to plot multivariate data as a large number of curves that are created using the attributes of samples as coefficients for Fourier series. By coloring these curves differently for each class it is possible to visualize data clustering. Curves belonging to samples of the same class will usually be closer together and form larger structures".
-
-# In[90]:
-
-
-from pandas.plotting import andrews_curves
-andrews_curves(aircrafts_norm, 'damage_level')
-
-
-# That's an awesome plot: while in the parallel coordinates plot it was impossible to see any pattern, here we verify that 1 ('NONE') and 3 ('DESTROYED') are clustered at some level almost "everywhere".
-
-# # Conclusion:
+# *  The bigger (or newer) the aircraft, the lesser the damage level.
 # 
-# * Most points are opposite to takeoff_max_weight_(Lbs) and on the engines_amount side.
+# *  The newer the aircraft, the lighter it is, i.e. lower max takeoff weight.
 # 
-# * Most points are opposite to seatings_amount and on the year_manufacture side, but too much spread on this axis.
+# *  The lighter the aircraft, the lesser the damage level.
 # 
-# Therefore, engines_amount and takeoff_max_weight_(Lbs) seems to be the most reliable features to characterize damage_level.
+# 
