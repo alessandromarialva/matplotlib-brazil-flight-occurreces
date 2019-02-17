@@ -61,8 +61,8 @@ import pandas as pd
 # The following code contains the credentials for a file in your IBM Cloud Object Storage.
 # You might want to remove those credentials before you share your notebook.
 credentials_1 = {
-    'IBM_API_KEY_ID': 'gIMZPDj31lO38pRQ0aegjrGR1kpkl6Q_aYM9LyJMzfjF',
-    'IAM_SERVICE_ID': 'iam-ServiceId-90ef20b7-b77f-4586-99fb-52cd2460ab74',
+    'IBM_API_KEY_ID': 'XXXX',
+    'IAM_SERVICE_ID': 'XXXX',
     'ENDPOINT': 'https://s3-api.us-geo.objectstorage.service.networklayer.com',
     'IBM_AUTH_ENDPOINT': 'https://iam.bluemix.net/oidc/token',
     'BUCKET': 'default-donotdelete-pr-nlfssruajbx9xv',
@@ -86,7 +86,7 @@ def __iter__(self): return 0
 # The following code accesses a file in your IBM Cloud Object Storage. It includes your credentials.
 # You might want to remove those credentials before you share your notebook.
 client_689c19f611b0478583c74d2a7431addc = ibm_boto3.client(service_name='s3',
-    ibm_api_key_id='gIMZPDj31lO38pRQ0aegjrGR1kpkl6Q_aYM9LyJMzfjF',
+    ibm_api_key_id='XXXX',
     ibm_auth_endpoint="https://iam.bluemix.net/oidc/token",
     config=Config(signature_version='oauth'),
     endpoint_url='https://s3-api.us-geo.objectstorage.service.networklayer.com')
